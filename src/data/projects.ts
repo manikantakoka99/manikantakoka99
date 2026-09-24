@@ -82,7 +82,9 @@ export const projects: Project[] = [
     ],
     tools: ["Public CT logs", "DNS tooling", "OSINT sources"],
     findings: [
-      "Detailed per-target findings: Not specified in source (source PDF unavailable on build worker).",
+      "Mapped IRCTC, LIC, BSNL, and AAI via CT, DNS, official links, passive indexes, and minimal HTTP checks.",
+      "Interesting parts were mostly login portals, mixed hosting, leftover environment names, and limited metadata disclosure — not open storage/databases.",
+      "Public recon inventory only; does not prove listed systems are vulnerable.",
     ],
     securityRelevance:
       "External attack-surface awareness informs defensive prioritization without requiring unauthorized access.",
@@ -118,8 +120,9 @@ export const projects: Project[] = [
     ],
     tools: ["Structured risk analysis", "Attack path modeling"],
     findings: [
-      "13 assets, 5 crown jewels, 10 vulnerabilities, and 10 attack scenarios captured from assessment framing.",
-      "Per-item evidence detail: Not specified in source where source document fields were unavailable.",
+      "13 assets classified by sensitivity/criticality; 5 crown jewels selected via C1–C5 criteria.",
+      "10 scenario-derived vulnerabilities with mapped attacks, PDM controls, ordinal likelihood/impact, and Mitigate treatments.",
+      "Highest-urgency themes: Tatkal bot abuse, API auth gaps, shared backups, unrotated privileges, capacity/DoS.",
     ],
     securityRelevance:
       "Demonstrates structured gap-assessment thinking used in enterprise security reviews.",

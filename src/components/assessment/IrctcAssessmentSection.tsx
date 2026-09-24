@@ -159,6 +159,7 @@ export function IrctcAssessmentSection() {
                   {(
                     [
                       ["CROWN JEWEL", jewel.name],
+                      ["CRITERIA MET", jewel.criteriaMet],
                       ["WHY IT MATTERS", jewel.whyItMatters],
                       ["PRIMARY THREAT", jewel.primaryThreat],
                       ["BUSINESS IMPACT", jewel.businessImpact],
@@ -203,6 +204,10 @@ export function IrctcAssessmentSection() {
                   />
                   <Field label="SOURCE EVIDENCE" value={vuln.sourceEvidence} />
                   <Field label="ATTACK SCENARIO" value={vuln.attackScenario} />
+                  <Field label="POSSIBLE ATTACK" value={vuln.possibleAttack} />
+                  <Field label="ATTACK TYPE" value={vuln.attackType} />
+                  <Field label="LIKELY ATTACKER" value={vuln.likelyAttacker} />
+                  <Field label="ATTACK GOAL" value={vuln.attackGoal} />
                 </div>
               )}
             </div>
@@ -245,15 +250,54 @@ export function IrctcAssessmentSection() {
           )}
 
           {tab === "risk" && (
-            <div className="rounded border border-[var(--border)] bg-[var(--panel-0)] p-4 space-y-3">
-              <Field label="LIKELIHOOD" value={irctcAssessment.risk.likelihood} />
-              <Field label="IMPACT" value={irctcAssessment.risk.impact} />
-              <Field
-                label="RISK STATEMENT"
-                value={irctcAssessment.risk.riskStatement}
-              />
+            <div className="space-y-4">
+              <p className="font-mono text-[10px] text-[var(--text-dim)]">
+                {irctcAssessment.risk.note}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {irctcAssessment.vulnerabilities.map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => setVulnId(v.id)}
+                    className={`rounded border px-3 py-2 font-mono text-[10px] ${
+                      vulnId === v.id
+                        ? "border-[var(--amber)]/50 bg-[var(--amber)]/10 text-[var(--amber)]"
+                        : "border-[var(--border)] text-[var(--text-muted)]"
+                    }`}
+                  >
+                    {v.attackScenario}
+                  </button>
+                ))}
+              </div>
+              {vuln && (
+                <div className="rounded border border-[var(--border)] bg-[var(--panel-0)] p-4 space-y-3">
+                  <Field label="VULNERABILITY + ATTACK" value={vuln.title} />
+                  <Field label="LIKELIHOOD" value={vuln.likelihood} />
+                  <Field label="IMPACT" value={vuln.impact} />
+                  <Field label="RISK STATEMENT" value={vuln.riskStatement} />
+                  <Field
+                    label="TREATMENT STRATEGY"
+                    value={vuln.treatmentStrategy}
+                  />
+                  <Field
+                    label="TREATMENT JUSTIFICATION"
+                    value={vuln.treatmentJustification}
+                  />
+                  <div>
+                    <p className="font-mono text-[10px] text-[var(--text-dim)]">
+                      SPECIFIC ACTIONS
+                    </p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-[var(--text-muted)]">
+                      {vuln.treatmentActions.map((a) => (
+                        <li key={a}>{a}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
               <p className="font-mono text-[10px] text-[var(--amber)]">
-                No invented risk scores or severity percentages.
+                No invented numeric risk scores — source ordinal scales only.
               </p>
             </div>
           )}
