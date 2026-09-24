@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { toolCategories, tools } from "@/data/tools";
 
 export function ToolInventory() {
+  const [open, setOpen] = useState<string | null>("OFFENSIVE");
+
   return (
     <section
       id="section-tools"
@@ -11,41 +14,50 @@ export function ToolInventory() {
     >
       <div className="mx-auto max-w-6xl">
         <p className="font-mono text-xs text-[var(--green)]">
-          root@manikanta:~$ security-tools
+          root@manikanta:~$ ls /usr/bin/security-tools
         </p>
         <h2 id="tools-heading" className="mt-2 font-mono text-2xl text-[var(--text)]">
           Tools
         </h2>
         <p className="mt-2 text-sm text-[var(--text-muted)]">
-          Installed binaries metaphor — no fake proficiency percentages.
+          Categorized binaries — no fake proficiency percentages.
         </p>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          {toolCategories.map((cat) => (
-            <div
-              key={cat}
-              className="rounded border border-[var(--border)] bg-[var(--panel-0)] p-4"
-            >
-              <p className="font-mono text-[10px] tracking-[0.2em] text-[var(--cyan)]">
-                {cat}
-              </p>
-              <ul className="mt-3 space-y-2">
-                {tools
-                  .filter((t) => t.category === cat)
-                  .map((t) => (
-                    <li
-                      key={t.binary}
-                      className="flex items-center justify-between font-mono text-sm text-[var(--text-muted)]"
-                    >
-                      <span>{t.name}</span>
-                      <span className="text-[10px] text-[var(--text-dim)]">
-                        ./{t.binary}
-                      </span>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+        <ul className="mt-6 space-y-2 font-mono text-sm">
+          {toolCategories.map((cat) => {
+            const expanded = open === cat;
+            const items = tools.filter((t) => t.category === cat);
+            return (
+              <li key={cat} className="rounded border border-[var(--border)] bg-[var(--panel-0)]">
+                <button
+                  type="button"
+                  onClick={() => setOpen(expanded ? null : cat)}
+                  className="flex w-full items-center justify-between px-4 py-3 text-left text-[var(--cyan)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--cyan)]"
+                  aria-expanded={expanded}
+                >
+                  <span>/{cat.toLowerCase()}</span>
+                  <span className="text-[10px] text-[var(--text-dim)]">
+                    {expanded ? "collapse" : "expand"} · {items.length}
+                  </span>
+                </button>
+                {expanded && (
+                  <ul className="border-t border-[var(--border)] px-4 py-3 space-y-2">
+                    {items.map((t) => (
+                      <li
+                        key={t.binary}
+                        className="flex items-center justify-between text-[var(--text-muted)]"
+                      >
+                        <span>{t.name}</span>
+                        <span className="text-[10px] text-[var(--text-dim)]">
+                          ./{t.binary}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </section>
   );

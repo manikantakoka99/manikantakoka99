@@ -5,6 +5,7 @@ import { WorkstationProvider } from "@/context/WorkstationContext";
 import { BootSequence } from "@/components/terminal/BootSequence";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
+import { RecruiterMode } from "@/components/layout/RecruiterMode";
 import { CommandPalette } from "@/components/terminal/CommandPalette";
 import { GlobalSearch } from "@/components/terminal/GlobalSearch";
 import { TerminalShell } from "@/components/terminal/TerminalShell";
@@ -27,9 +28,14 @@ const GitHubPanel = dynamic(
   {
     ssr: false,
     loading: () => (
-      <section id="section-github" className="scroll-mt-16 border-b border-[var(--border)] px-4 py-12">
+      <section
+        id="section-github"
+        className="scroll-mt-16 border-b border-[var(--border)] px-4 py-12"
+      >
         <div className="mx-auto max-w-6xl">
-          <p className="font-mono text-xs text-[var(--text-dim)]">Loading GitHub…</p>
+          <p className="font-mono text-xs text-[var(--text-dim)]">
+            Loading GitHub…
+          </p>
         </div>
       </section>
     ),
@@ -44,6 +50,7 @@ export function Workstation() {
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <TopBar />
+          <RecruiterMode />
           <main className="flex-1 overflow-x-hidden">
             <HeroTerminal />
             <AboutSection />

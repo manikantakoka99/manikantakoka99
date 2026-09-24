@@ -7,13 +7,16 @@ type Props = {
   value: string;
   onChange: (v: string) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  promptOverride?: string;
 };
 
 export const TerminalPrompt = forwardRef<HTMLInputElement, Props>(
-  function TerminalPrompt({ value, onChange, onKeyDown }, ref) {
+  function TerminalPrompt({ value, onChange, onKeyDown, promptOverride }, ref) {
     return (
       <label className="flex items-center gap-2 font-mono text-xs sm:text-sm">
-        <span className="shrink-0 text-[var(--green)]">{profile.prompt}</span>
+        <span className="shrink-0 text-[var(--green)]">
+          {promptOverride ?? profile.prompt}
+        </span>
         <span className="relative flex min-w-0 flex-1 items-center">
           <input
             ref={ref}

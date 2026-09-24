@@ -8,16 +8,19 @@ export function GitHubRepoCard({ repo }: { repo: GitHubRepo }) {
       href={repo.html_url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block rounded border border-[var(--border)] bg-[var(--panel-0)] p-4 transition hover:border-[var(--cyan)]/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--cyan)]"
+      className="group block rounded border border-[var(--border)] bg-[var(--panel-0)] p-4 transition hover:-translate-y-0.5 hover:border-[var(--cyan)]/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--cyan)]"
     >
-      <p className="font-mono text-sm text-[var(--cyan)]">{repo.name}</p>
+      <p className="font-mono text-sm text-[var(--cyan)] group-hover:underline">
+        {repo.name}
+      </p>
       <p className="mt-2 line-clamp-2 text-xs text-[var(--text-muted)]">
         {repo.description || "No description"}
       </p>
-      <div className="mt-3 flex flex-wrap gap-3 font-mono text-[10px] text-[var(--text-dim)]">
+      <div className="mt-3 flex flex-wrap gap-3 font-mono text-[10px] text-[var(--text-dim)] opacity-80 transition group-hover:opacity-100">
         <span>{repo.language || "—"}</span>
         <span>★ {repo.stargazers_count}</span>
         <span>forks {repo.forks_count}</span>
+        <span>updated {new Date(repo.updated_at).toLocaleDateString()}</span>
       </div>
     </a>
   );

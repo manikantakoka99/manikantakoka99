@@ -5,22 +5,19 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useWorkstation } from "@/context/WorkstationContext";
 
 const LINES = [
-  "root@manikanta:~$ ./initialize_portfolio.sh",
-  "",
-  "[+] Loading security modules...",
-  "[+] Initializing SOC environment...",
-  "[+] Loading project files...",
-  "[+] Loading certifications...",
-  "[+] Loading security research...",
-  "[+] Connecting GitHub...",
-  "[+] Wazuh ................. ONLINE",
-  "[+] Kali .................. ONLINE",
-  "[+] GitHub ................ CONNECTED",
-  "[+] SC-200 ................ VERIFIED",
-  "",
-  "SYSTEM READY.",
-  "",
-  "root@manikanta:~$",
+  { text: "root@manikanta:~$ ./initialize_portfolio.sh", tone: "cmd" },
+  { text: "", tone: "plain" },
+  { text: "[ OK ] Loading kernel modules", tone: "ok" },
+  { text: "[ OK ] Loading security services", tone: "ok" },
+  { text: "[ OK ] Mounting project filesystem", tone: "ok" },
+  { text: "[ OK ] Loading certificates", tone: "ok" },
+  { text: "[ OK ] Loading reports", tone: "ok" },
+  { text: "[ OK ] Connecting GitHub", tone: "ok" },
+  { text: "[ OK ] Initializing SOC environment", tone: "ok" },
+  { text: "", tone: "plain" },
+  { text: "SYSTEM READY", tone: "ready" },
+  { text: "", tone: "plain" },
+  { text: "root@manikanta:~$", tone: "cmd" },
 ];
 
 export function BootSequence() {
@@ -38,7 +35,7 @@ export function BootSequence() {
     if (visible >= LINES.length) return;
     const t = window.setTimeout(
       () => setVisible((v) => v + 1),
-      visible === 0 ? 200 : 90,
+      visible === 0 ? 180 : 70,
     );
     return () => window.clearTimeout(t);
   }, [show, visible, reduce]);
@@ -60,7 +57,7 @@ export function BootSequence() {
           <div className="relative w-full max-w-2xl rounded-lg border border-[var(--border)] bg-[var(--panel-0)] p-6 shadow-[0_0_40px_rgba(34,211,238,0.08)]">
             <div className="mb-4 flex items-center justify-between gap-3">
               <p className="font-mono text-xs text-[var(--cyan)]">
-                PORTFOLIO BOOTLOADER
+                WORKSTATION BOOT
               </p>
               <button
                 type="button"
@@ -71,17 +68,19 @@ export function BootSequence() {
               </button>
             </div>
             <pre
-              className="min-h-[280px] overflow-hidden font-mono text-[13px] leading-6 text-[var(--text)]"
+              className="min-h-[240px] overflow-hidden font-mono text-[13px] leading-6 text-[var(--text)]"
               aria-live="polite"
             >
               {LINES.slice(0, visible).map((line, i) => (
-                <div key={`${i}-${line}`}>
-                  {line.startsWith("[+]") ? (
-                    <span className="text-[var(--green)]">{line}</span>
-                  ) : line.includes("SYSTEM READY") ? (
-                    <span className="text-[var(--cyan)]">{line}</span>
+                <div key={`${i}-${line.text}`}>
+                  {line.tone === "ok" ? (
+                    <span className="text-[var(--green)]">{line.text}</span>
+                  ) : line.tone === "ready" ? (
+                    <span className="text-[var(--cyan)]">{line.text}</span>
+                  ) : line.tone === "cmd" ? (
+                    <span className="text-[var(--green)]">{line.text}</span>
                   ) : (
-                    line
+                    line.text
                   )}
                 </div>
               ))}

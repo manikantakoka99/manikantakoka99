@@ -9,12 +9,21 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { navItems, type SectionId } from "@/data/profile";
+import { type SectionId } from "@/data/profile";
+import {
+  HOME,
+  SECTION_CWD,
+  displayPath,
+  promptPath,
+} from "@/lib/filesystem";
 
 type WorkstationContextValue = {
   section: SectionId;
-  setSection: (id: SectionId) => void;
+  setSection: (id: SectionId, opts?: { syncCwd?: boolean }) => void;
+  cwd: string;
+  setCwd: (path: string) => void;
   path: string;
+  prompt: string;
   booted: boolean;
   setBooted: (v: boolean) => void;
   mobileNavOpen: boolean;
@@ -25,6 +34,11 @@ type WorkstationContextValue = {
   setSearchOpen: (v: boolean) => void;
   terminalOpen: boolean;
   setTerminalOpen: (v: boolean) => void;
+  recruiterMode: boolean;
+  setRecruiterMode: (v: boolean) => void;
+  resumeAvailable: boolean;
+  openCertModal: boolean;
+  setOpenCertModal: (v: boolean) => void;
 };
 
 const WorkstationContext = createContext<WorkstationContextValue | null>(null);
@@ -42,12 +56,16 @@ function readBooted(): boolean {
 
 export function WorkstationProvider({ children }: { children: ReactNode }) {
   const [section, setSectionState] = useState<SectionId>("home");
+  const [cwd, setCwd] = useState(HOME);
   const [booted, setBootedState] = useState(true);
   const [hydrated, setHydrated] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [recruiterMode, setRecruiterMode] = useState(false);
+  const [resumeAvailable, setResumeAvailable] = useState(false);
+  const [openCertModal, setOpenCertModal] = useState(false);
 
   useEffect(() => {
     const id = window.requestAnimationFrame(() => {
@@ -55,6 +73,21 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       setHydrated(true);
     });
     return () => window.cancelAnimationFrame(id);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/assets/resume.pdf", { method: "HEAD" });
+        if (!cancelled) setResumeAvailable(res.ok);
+      } catch {
+        if (!cancelled) setResumeAvailable(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const setBooted = useCallback((v: boolean) => {
@@ -68,14 +101,20 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const setSection = useCallback((id: SectionId) => {
-    setSectionState(id);
-    setMobileNavOpen(false);
-    const el = document.getElementById(`section-${id}`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, []);
+  const setSection = useCallback(
+    (id: SectionId, opts?: { syncCwd?: boolean }) => {
+      setSectionState(id);
+      setMobileNavOpen(false);
+      if (opts?.syncCwd !== false) {
+        setCwd(SECTION_CWD[id] ?? HOME);
+      }
+      const el = document.getElementById(`section-${id}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -88,16 +127,17 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const path = useMemo(
-    () => navItems.find((n) => n.id === section)?.path ?? "~/home",
-    [section],
-  );
+  const path = useMemo(() => displayPath(cwd), [cwd]);
+  const prompt = useMemo(() => promptPath(cwd), [cwd]);
 
   const value = useMemo(
     () => ({
       section,
       setSection,
+      cwd,
+      setCwd,
       path,
+      prompt,
       booted: hydrated ? booted : true,
       setBooted,
       mobileNavOpen,
@@ -108,11 +148,18 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       setSearchOpen,
       terminalOpen,
       setTerminalOpen,
+      recruiterMode,
+      setRecruiterMode,
+      resumeAvailable,
+      openCertModal,
+      setOpenCertModal,
     }),
     [
       section,
       setSection,
+      cwd,
       path,
+      prompt,
       booted,
       hydrated,
       setBooted,
@@ -120,6 +167,9 @@ export function WorkstationProvider({ children }: { children: ReactNode }) {
       paletteOpen,
       searchOpen,
       terminalOpen,
+      recruiterMode,
+      resumeAvailable,
+      openCertModal,
     ],
   );
 

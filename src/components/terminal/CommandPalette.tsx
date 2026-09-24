@@ -1,25 +1,52 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { navItems, type SectionId } from "@/data/profile";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useWorkstation } from "@/context/WorkstationContext";
+import type { SectionId } from "@/data/profile";
 
-const COMMANDS: { label: string; section: SectionId }[] = [
-  { label: "Go Home", section: "home" },
-  { label: "About", section: "about" },
-  { label: "Projects", section: "projects" },
-  { label: "SOC Lab", section: "soc" },
-  { label: "Attack Surface Enumeration", section: "recon" },
-  { label: "IRCTC Assessment", section: "assessment" },
-  { label: "Writeups", section: "writeups" },
-  { label: "Certifications", section: "certs" },
-  { label: "Tools", section: "tools" },
-  { label: "GitHub", section: "github" },
-  { label: "Contact", section: "contact" },
+type PaletteCommand = {
+  label: string;
+  section: SectionId;
+  hint: string;
+  action?: "cert" | "recruiter";
+};
+
+const COMMANDS: PaletteCommand[] = [
+  { label: "Go to Home", section: "home", hint: "~" },
+  { label: "Go to Projects", section: "projects", hint: "~/projects" },
+  { label: "Open SOC Lab", section: "soc", hint: "~/projects/soc-detection-lab" },
+  {
+    label: "Open Attack Surface Enumeration",
+    section: "recon",
+    hint: "~/projects/attack-surface-enumeration",
+  },
+  {
+    label: "Open IRCTC Assessment",
+    section: "assessment",
+    hint: "~/projects/irctc-gap-assessment",
+  },
+  { label: "View SC-200", section: "certs", hint: "~/certifications", action: "cert" },
+  { label: "Open GitHub", section: "github", hint: "~/github" },
+  { label: "View Writeups", section: "writeups", hint: "~/writeups" },
+  { label: "Open Tools", section: "tools", hint: "~/tools" },
+  { label: "Contact", section: "contact", hint: "~/contact" },
+  { label: "About", section: "about", hint: "~/about.txt" },
+  {
+    label: "Recruiter Mode",
+    section: "home",
+    hint: "simplified view",
+    action: "recruiter",
+  },
 ];
 
 export function CommandPalette() {
-  const { paletteOpen, setPaletteOpen, setSection } = useWorkstation();
+  const {
+    paletteOpen,
+    setPaletteOpen,
+    setSection,
+    setOpenCertModal,
+    setRecruiterMode,
+  } = useWorkstation();
   const [q, setQ] = useState("");
   const [idx, setIdx] = useState(0);
 
@@ -30,6 +57,24 @@ export function CommandPalette() {
   }, [q]);
 
   const safeIdx = Math.min(idx, Math.max(filtered.length - 1, 0));
+
+  const run = useCallback(
+    (c: PaletteCommand) => {
+      if (c.action === "recruiter") {
+        setRecruiterMode(true);
+        setSection("home");
+      } else if (c.action === "cert") {
+        setSection("certs");
+        setOpenCertModal(true);
+      } else {
+        setSection(c.section);
+      }
+      setPaletteOpen(false);
+      setQ("");
+      setIdx(0);
+    },
+    [setRecruiterMode, setSection, setOpenCertModal, setPaletteOpen],
+  );
 
   useEffect(() => {
     if (!paletteOpen) return;
@@ -45,15 +90,12 @@ export function CommandPalette() {
       }
       if (e.key === "Enter" && filtered[safeIdx]) {
         e.preventDefault();
-        setSection(filtered[safeIdx].section);
-        setPaletteOpen(false);
-        setQ("");
-        setIdx(0);
+        run(filtered[safeIdx]);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [paletteOpen, filtered, safeIdx, setPaletteOpen, setSection]);
+  }, [paletteOpen, filtered, safeIdx, setPaletteOpen, run]);
 
   if (!paletteOpen) return null;
 
@@ -64,6 +106,9 @@ export function CommandPalette() {
         aria-label="Command palette"
         className="w-full max-w-lg overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--panel-0)] shadow-[0_0_40px_rgba(34,211,238,0.12)]"
       >
+        <div className="border-b border-[var(--border)] px-4 py-2 font-mono text-[10px] text-[var(--text-dim)]">
+          root@manikanta:~$ command
+        </div>
         <input
           autoFocus
           value={q}
@@ -71,39 +116,38 @@ export function CommandPalette() {
             setQ(e.target.value);
             setIdx(0);
           }}
-          placeholder="Type a command…"
-          className="w-full border-b border-[var(--border)] bg-transparent px-4 py-3 font-mono text-sm text-[var(--text)] outline-none placeholder:text-[var(--text-dim)]"
+          placeholder="Search commands…"
+          className="w-full bg-transparent px-4 py-3 font-mono text-sm text-[var(--text)] outline-none placeholder:text-[var(--text-dim)]"
           aria-label="Filter commands"
         />
-        <ul className="max-h-72 overflow-y-auto py-1" role="listbox">
-          {filtered.map((c, i) => {
-            const path = navItems.find((n) => n.id === c.section)?.path;
-            return (
-              <li key={c.label}>
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={i === safeIdx}
-                  className={`flex w-full items-center justify-between px-4 py-2.5 text-left font-mono text-sm ${
-                    i === safeIdx
-                      ? "bg-[var(--cyan)]/15 text-[var(--cyan)]"
-                      : "text-[var(--text-muted)] hover:bg-[var(--panel-1)]"
-                  }`}
-                  onMouseEnter={() => setIdx(i)}
-                  onClick={() => {
-                    setSection(c.section);
-                    setPaletteOpen(false);
-                    setQ("");
-                    setIdx(0);
-                  }
-                  }
-                >
-                  <span>{c.label}</span>
-                  <span className="text-[10px] text-[var(--text-dim)]">{path}</span>
-                </button>
-              </li>
-            );
-          })}
+        <ul
+          className="max-h-80 overflow-y-auto border-t border-[var(--border)] py-1"
+          role="listbox"
+        >
+          {filtered.map((c, i) => (
+            <li key={c.label}>
+              <button
+                type="button"
+                role="option"
+                aria-selected={i === safeIdx}
+                className={`flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left font-mono text-sm ${
+                  i === safeIdx
+                    ? "bg-[var(--cyan)]/15 text-[var(--cyan)]"
+                    : "text-[var(--text-muted)] hover:bg-[var(--panel-1)]"
+                }`}
+                onMouseEnter={() => setIdx(i)}
+                onClick={() => run(c)}
+              >
+                <span>
+                  <span className="text-[var(--text-dim)]">&gt; </span>
+                  {c.label}
+                </span>
+                <span className="shrink-0 text-[10px] text-[var(--text-dim)]">
+                  {c.hint}
+                </span>
+              </button>
+            </li>
+          ))}
           {!filtered.length && (
             <li className="px-4 py-3 font-mono text-xs text-[var(--text-dim)]">
               No matches

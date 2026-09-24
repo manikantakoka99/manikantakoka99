@@ -4,9 +4,12 @@ import { useState } from "react";
 import { certifications } from "@/data/certifications";
 import { CertificationCard } from "@/components/certs/CertificationCard";
 import { CredentialModal } from "@/components/certs/CredentialModal";
+import { useWorkstation } from "@/context/WorkstationContext";
 
 export function CertificationsSection() {
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [localOpenId, setLocalOpenId] = useState<string | null>(null);
+  const { openCertModal, setOpenCertModal } = useWorkstation();
+  const openId = localOpenId ?? (openCertModal ? certifications[0]?.id ?? null : null);
   const open = certifications.find((c) => c.id === openId) ?? null;
 
   return (
@@ -24,13 +27,26 @@ export function CertificationsSection() {
         </h2>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {certifications.map((c) => (
-            <li key={c.id}>
-              <CertificationCard cert={c} onOpen={() => setOpenId(c.id)} />
+            <li key={c.id} className="lg:col-span-1 sm:max-w-md">
+              <CertificationCard
+                cert={c}
+                featured
+                onOpen={() => {
+                  setLocalOpenId(c.id);
+                  setOpenCertModal(true);
+                }}
+              />
             </li>
           ))}
         </ul>
         {open && (
-          <CredentialModal cert={open} onClose={() => setOpenId(null)} />
+          <CredentialModal
+            cert={open}
+            onClose={() => {
+              setLocalOpenId(null);
+              setOpenCertModal(false);
+            }}
+          />
         )}
       </div>
     </section>

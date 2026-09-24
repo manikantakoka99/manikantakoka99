@@ -76,9 +76,25 @@ body {
   box-shadow: 0 0 8px currentColor;
 }
 
+.panel-hover {
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.panel-hover:hover {
+  transform: translateY(-1px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .panel-hover,
+  .panel-hover:hover {
+    transform: none;
   }
 
   *,

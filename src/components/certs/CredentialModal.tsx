@@ -40,6 +40,14 @@ export function CredentialModal({
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <a
+              href="https://learn.microsoft.com/en-us/credentials/certifications/security-operations-analyst/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded border border-[var(--border)] px-2 py-1 font-mono text-[10px] text-[var(--text-muted)] hover:border-[var(--cyan)]/40 hover:text-[var(--cyan)]"
+            >
+              Verify
+            </a>
             <button
               type="button"
               onClick={() => setZoom((z) => Math.min(z + 0.25, 2.5))}

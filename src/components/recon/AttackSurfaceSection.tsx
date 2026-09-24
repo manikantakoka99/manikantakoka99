@@ -3,10 +3,22 @@
 import { useState } from "react";
 import { attackSurface } from "@/data/attackSurface";
 import { AttackPath } from "@/components/recon/AttackPath";
+import { useWorkstation } from "@/context/WorkstationContext";
+
+const PANEL_KEYS = [
+  "Domains",
+  "Hosting / CDN",
+  "Observed Services",
+  "Exposed Interfaces",
+  "Interesting Findings",
+  "Potential Risks",
+  "Limitations",
+] as const;
 
 export function AttackSurfaceSection() {
   const [targetId, setTargetId] = useState(attackSurface.targets[0]?.id);
   const target = attackSurface.targets.find((t) => t.id === targetId);
+  const { setSection, path } = useWorkstation();
 
   return (
     <section
@@ -15,9 +27,21 @@ export function AttackSurfaceSection() {
       aria-labelledby="recon-heading"
     >
       <div className="mx-auto max-w-6xl">
-        <p className="font-mono text-xs text-[var(--green)]">
-          root@manikanta:~/projects/attack-surface-enumeration$
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="font-mono text-xs text-[var(--green)]">
+            root@manikanta:~/projects/attack-surface-enumeration$
+          </p>
+          <span className="rounded border border-[var(--border)] px-2 py-0.5 font-mono text-[10px] text-[var(--text-dim)]">
+            {path}
+          </span>
+          <button
+            type="button"
+            onClick={() => setSection("projects")}
+            className="rounded border border-[var(--border)] px-2 py-0.5 font-mono text-[10px] text-[var(--text-muted)] hover:border-[var(--cyan)]/40 hover:text-[var(--cyan)]"
+          >
+            [ cd .. ]
+          </button>
+        </div>
         <h2 id="recon-heading" className="mt-2 font-mono text-2xl text-[var(--text)]">
           {attackSurface.title}
         </h2>
@@ -35,63 +59,53 @@ export function AttackSurfaceSection() {
         <p className="mt-3 max-w-3xl text-sm text-[var(--text-muted)]">
           {attackSurface.disclaimer}
         </p>
-        <p className="mt-2 font-mono text-[10px] text-[var(--amber)]">
-          {attackSurface.sourceNote}
-        </p>
 
-        <div className="mt-6 flex flex-wrap gap-2">
-          {attackSurface.targets.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTargetId(t.id)}
-              className={`rounded border px-3 py-2 font-mono text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--cyan)] ${
-                targetId === t.id
-                  ? "border-[var(--cyan)] bg-[var(--cyan)]/15 text-[var(--cyan)]"
-                  : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--cyan)]/40"
-              }`}
-            >
-              {t.name}
-            </button>
-          ))}
-        </div>
-
-        {target && (
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {(Object.keys(target.fields) as (keyof typeof target.fields)[]).map(
-              (key) => (
-                <div
-                  key={key}
-                  className="rounded border border-[var(--border)] bg-[var(--panel-0)] p-3"
-                >
-                  <p className="font-mono text-[10px] tracking-wider text-[var(--text-dim)]">
-                    {key.toUpperCase()}
-                  </p>
-                  <p className="mt-2 text-sm text-[var(--text-muted)]">
-                    {target.fields[key]}
-                  </p>
-                </div>
-              ),
-            )}
-          </div>
-        )}
-
-        <div className="mt-8">
-          <p className="font-mono text-[10px] tracking-[0.2em] text-[var(--text-dim)]">
-            METHODOLOGY
-          </p>
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-2">
-            {attackSurface.methodology.map((step, i) => (
-              <div key={step} className="flex shrink-0 items-center gap-2">
-                <span className="rounded border border-[var(--border)] bg-[var(--panel-1)] px-3 py-2 font-mono text-[11px] text-[var(--text-muted)]">
-                  {step}
-                </span>
-                {i < attackSurface.methodology.length - 1 && (
-                  <span className="text-[var(--text-dim)]">↓</span>
-                )}
-              </div>
+        <div className="mt-8 grid gap-6 lg:grid-cols-[220px_1fr]">
+          <div className="space-y-2">
+            <p className="font-mono text-[10px] tracking-[0.2em] text-[var(--text-dim)]">
+              TARGETS
+            </p>
+            {attackSurface.targets.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setTargetId(t.id)}
+                className={`block w-full rounded border px-3 py-3 text-left font-mono text-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--cyan)] ${
+                  targetId === t.id
+                    ? "border-[var(--cyan)] bg-[var(--cyan)]/15 text-[var(--cyan)]"
+                    : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--cyan)]/40"
+                }`}
+              >
+                {t.name}
+              </button>
             ))}
           </div>
+
+          {target && (
+            <div className="space-y-4">
+              <div className="rounded border border-[var(--border)] bg-[var(--panel-0)] p-4">
+                <p className="font-mono text-lg text-[var(--cyan)]">{target.name}</p>
+                <p className="mt-1 font-mono text-[10px] text-[var(--text-dim)]">
+                  Interactive target explorer — source-derived fields only
+                </p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {PANEL_KEYS.map((key) => (
+                  <div
+                    key={key}
+                    className="rounded border border-[var(--border)] bg-[var(--panel-0)] p-3 transition hover:border-[var(--cyan)]/30"
+                  >
+                    <p className="font-mono text-[10px] tracking-wider text-[var(--text-dim)]">
+                      {key.toUpperCase()}
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
+                      {target.fields[key]}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mt-8">

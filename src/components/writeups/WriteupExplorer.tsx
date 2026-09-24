@@ -23,15 +23,26 @@ export function WriteupExplorer() {
         >
           Writeups
         </h2>
+        <p className="mt-2 text-sm text-[var(--text-muted)]">
+          Markdown-style readers —{" "}
+          <span className="font-mono text-[var(--cyan)]">
+            cat &lt;file&gt;.md
+          </span>
+        </p>
         <ul className="mt-6 space-y-2">
           {writeups.map((w) => (
             <li key={w.id}>
               <button
                 type="button"
                 onClick={() => setActive(w)}
-                className="w-full rounded border border-[var(--border)] bg-[var(--panel-0)] px-4 py-3 text-left font-mono text-sm text-[var(--cyan)] transition hover:border-[var(--cyan)]/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--cyan)]"
+                className="group w-full rounded border border-[var(--border)] bg-[var(--panel-0)] px-4 py-3 text-left transition hover:border-[var(--cyan)]/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--cyan)]"
               >
-                {w.filename}
+                <span className="font-mono text-xs text-[var(--text-dim)]">
+                  root@manikanta:~/writeups$ cat {w.filename}
+                </span>
+                <span className="mt-1 block font-mono text-sm text-[var(--cyan)] group-hover:underline">
+                  {w.filename}
+                </span>
                 <span className="mt-1 block text-xs text-[var(--text-muted)]">
                   {w.title}
                 </span>

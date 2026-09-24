@@ -75,10 +75,10 @@ export type SectionId =
   | "contact";
 
 export const navItems: { id: SectionId; label: string; path: string }[] = [
-  { id: "home", label: "HOME", path: "~/home" },
+  { id: "home", label: "HOME", path: "~" },
   { id: "about", label: "ABOUT", path: "~/about.txt" },
   { id: "projects", label: "PROJECTS", path: "~/projects" },
-  { id: "soc", label: "SOC LAB", path: "~/labs/soc-detection-lab" },
+  { id: "soc", label: "SOC LAB", path: "~/projects/soc-detection-lab" },
   { id: "recon", label: "RECON", path: "~/projects/attack-surface-enumeration" },
   {
     id: "assessment",
