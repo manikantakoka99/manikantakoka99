@@ -1,100 +1,50 @@
-Hi 👋, I'm Manikanta
-Cybersecurity & DevOps Engineer
+# Manikanta — Cybersecurity Portfolio
 
-Building secure, scalable, and automated infrastructure using modern DevOps practices while focusing on cloud security, infrastructure automation, and continuous delivery.
+Personal cybersecurity workstation portfolio built with **Next.js**, **TypeScript**, **Tailwind CSS**, **Framer Motion**, and **Lucide**.
 
----
+Identity: `root@manikanta:~$`
 
-## 👨‍💻 About Me
+## Setup
 
-- 🔐 Cybersecurity & DevOps Engineer
-- ☁️ Experienced with cloud infrastructure and automation
-- 🚀 Passionate about CI/CD, Infrastructure as Code, and containerized applications
-- 🐧 Strong Linux administration and scripting background
-- 🔒 Interested in cloud security, infrastructure security, and secure software delivery
-- 🤝 Open to collaborating on DevOps and Security projects
+```bash
+npm install
+cp .env.example .env.local
+npm run dev
+```
 
----
+Open [http://localhost:3000](http://localhost:3000).
 
-## ⚡ Technical Skills
+## Environment
 
-### Cloud
-- AWS
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_GITHUB_USERNAME` | Public GitHub username for live repo/activity fetch |
+| `NEXT_PUBLIC_LINKEDIN_URL` | Optional LinkedIn URL override |
+| `NEXT_PUBLIC_EMAIL` | Optional email override |
 
-### DevOps
-- Docker
-- Kubernetes
-- Jenkins
-- GitHub Actions
-- Terraform
-- Ansible
+## Assets
 
-### Operating Systems
-- Linux
-- Windows Server
+Place source files under `public/assets/`:
 
-### Programming & Scripting
-- Python
-- Bash
-- Shell Scripting
+- `sc-200-certificate.png`
+- `attack-surface-enumeration.pdf`
+- `irctc-gap-assessment.pdf`
+- `resume.pdf` (optional)
 
-### Security
-- SIEM
-- Wazuh
-- Sysmon
-- Network Security
-- Vulnerability Assessment
+The UI degrades gracefully when assets are missing.
 
-### Version Control
-- Git
-- GitHub
+## Scripts
 
----
+```bash
+npm run dev
+npm run lint
+npm run typecheck
+npm run build
+npm start
+```
 
-## 🚀 Core Competencies
+## Notes
 
-- CI/CD Pipeline Design
-- Infrastructure as Code (IaC)
-- Containerization
-- Kubernetes Orchestration
-- Cloud Infrastructure
-- Linux Administration
-- Infrastructure Automation
-- Security Monitoring
-- Incident Detection
-- Git Workflow
-
----
-
-## 📌 Featured Projects
-
-- SOC Detection & Incident Response Lab
-- DevOps Automation Projects
-- Dockerized Applications
-- Kubernetes Deployments
-- Terraform Infrastructure
-- Ansible Automation
-
----
-
-## 📫 Connect With Me
-
-- LinkedIn: www.linkedin.com/in/manikanta-koka-7524b3211
-- Email: manikantakoka99@gmail.com
-
-> *"Security, Automation, and Reliability are at the core of every successful infrastructure."*
-
-<!--
-**manikantakoka99/manikantakoka99** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-
-Here are some ideas to get you started:
-
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+- Terminal and `ssh github` are **website abstractions** — no real shell execution.
+- SOC simulation and attack-path animations are labeled **PORTFOLIO SIMULATION** / **SIMULATED VISUALIZATION**.
+- Attack Surface is framed as **public reconnaissance / security research**.
